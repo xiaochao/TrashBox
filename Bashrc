@@ -1,0 +1,30 @@
+#!/bin/sh
+
+mkdir -p ~/.trash_box
+alias rm=my_remove
+alias recover=my_recover
+
+my_remove()
+{
+    now=`date +%s`
+    mkdir -p ~/.trash_box/$now
+    mv -i $@ ~/.trash_box/$now
+}
+
+my_recover()
+{
+    start=echo $@|awk -F" " '{print $1}'
+    end=echo $@|awk -F" " '{print $2}'
+    start=date -d $start +%s
+    end=date -d $end +%s
+    for file in `ls ~/.trash_box`
+    do
+        if $file -ge $start
+        then
+            if $file -le $end
+            then
+                mv ~/.trash_box/$file/* .
+            fi
+        fi
+    done
+}
